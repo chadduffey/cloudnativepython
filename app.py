@@ -1,9 +1,21 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, make_response, request, abort
 
 import json
 import sqlite3
 
 app = Flask(__name__)
+
+@app.errorhandler(404)
+def resource_not_found(error):
+	return make_response(jsonify({'error':'Resource not found'}), 404)
+
+@app.errorhandler(400)
+def invalid_request(error):
+	return make_response(jsonify({'error': 'Bad request'}), 200)
+
+@app.errorhandler(409)
+def invalid_request(error):
+	return make_response(jsonify({'error': 'Object Exists'}), 200)
 
 def list_users():
 	conn = sqlite3.connect('mydb.db')
@@ -27,17 +39,34 @@ def list_user(user_id):
 	cursor = conn.cursor()
 	cursor = conn.execute("SELECT * from users where id=?",(user_id,))
 	data = cursor.fetchall()
+	user = {}
 	if len(data) != 0:
-		user = {}
 		user['username'] = data[0][0]
 		user['name'] = data[0][1]
 		user['email'] = data[0][2]
 		user['password'] = data[0][3]
 		user['id'] = data[0][4]
-	else:
-		user = {}
 	conn.close()
 	return jsonify(user)
+
+def add_user(new_user):
+	conn = sqlite3.connect('mydb.db')
+	print("Opened database successfully")
+	a_dict={}
+	cursor = conn.cursor()
+	cursor.execute(
+		"SELECT * from users where username=? or emailid=?",(new_user['username'],new_user['email']))
+	data = cursor.fetchall()
+	if len(data) != 0:
+		abort(409)
+	else:
+		cursor.execute(
+			"insert into users (username, emailid, password, full_name) values(?,?,?,?)",
+			(new_user['username'],new_user['email'], new_user['password'], new_user['name']))
+		conn.commit()
+		print("Success")
+	conn.close()
+	return 201
 
 
 
@@ -64,6 +93,19 @@ def get_users():
 @app.route("/api/v1/users/<int:user_id>", methods=['GET'])
 def get_user(user_id):
 	return list_user(user_id)
+
+@app.route("/api/v1/users", methods=['POST'])
+def create_user():
+	if not request.json or not 'username' in request.json \
+			or not 'email' in request.json or not 'password' in request.json:
+		abort(400)
+	user = {
+		'username' : request.json['username'],
+		'email' : request.json['email'],
+		'name' : request.json.get('name',""),
+		'password' : request.json['password']
+	}
+	return jsonify({'status': add_user(user)}), 201
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0', port=5000, debug=True)
