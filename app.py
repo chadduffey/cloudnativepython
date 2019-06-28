@@ -11,11 +11,11 @@ def resource_not_found(error):
 
 @app.errorhandler(400)
 def invalid_request(error):
-	return make_response(jsonify({'error': 'Bad request'}), 200)
+	return make_response(jsonify({'error': 'Bad request'}), 400)
 
 @app.errorhandler(409)
 def invalid_request(error):
-	return make_response(jsonify({'error': 'Object Exists'}), 200)
+	return make_response(jsonify({'error': 'Object Exists'}), 400)
 
 def list_users():
 	conn = sqlite3.connect('mydb.db')
@@ -68,6 +68,20 @@ def add_user(new_user):
 	conn.close()
 	return 201
 
+def del_user(del_user):
+	conn = sqlite3.connect('mydb.db')
+	print("Opened database successfully")
+	cursor = conn.cursor()
+	cursor.execute("SELECT * from users where username=?", (del_user,))
+	data = cursor.fetchall()
+	print("Data", data)
+	if len(data) == 0:
+		abort(404)
+	else:
+		cursor.execute("delete from users where username==?", (del_user,))
+		conn.commit()
+	return "Success"
+
 
 
 @app.route("/api/v1/info")
@@ -106,6 +120,14 @@ def create_user():
 		'password' : request.json['password']
 	}
 	return jsonify({'status': add_user(user)}), 201
+
+@app.route("/api/v1/users", methods=['DELETE'])
+def delete_user():
+	if not request.json or not 'username' in request.json:
+		abort(400)
+	user=request.json['username']
+	return jsonify({'status': del_user(user)}), 200
+
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0', port=5000, debug=True)
