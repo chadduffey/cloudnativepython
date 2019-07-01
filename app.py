@@ -138,6 +138,26 @@ def add_tweet(new_tweets):
 		conn.commit()
 		return "Success"
 
+def list_tweet(user_id):
+	print(user_id)
+	conn = sqlite3.connect('mydb.db')
+	print("Opened successfully")
+	api_list = []
+	cursor = conn.cursor()
+	cursor.execute("SELECT * from tweets where id=?", (user_id,))
+	data = cursor.fetchall()
+	print(data)
+	if len(data) == 0:
+		abort(404)
+	else:
+		user = {}
+		user['id'] = data[0][0]
+		user['username'] = data[0][1]
+		user['body'] = data[0][2]
+		user['tweet_time'] = data[0][3]
+		conn.close()
+		return jsonify(user)
+
 @app.route("/api/v1/info")
 def home_index():
 	conn = sqlite3.connect('mydb.db')
@@ -210,6 +230,11 @@ def add_tweets():
 	user_tweet['created_at'] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 	print(user_tweet)
 	return jsonify({'status': add_tweet(user_tweet)}), 200
+
+
+@app.route('/api/v2/tweets/<int:id>', methods=['GET'])
+def get_tweet(id):
+	return list_tweet(id)
 
 
 if __name__ == "__main__":
