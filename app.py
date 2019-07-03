@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, make_response, request, abort
+from flask import Flask, jsonify, make_response, request, abort, render_template
 
 import json
 import sqlite3
@@ -235,6 +235,10 @@ def add_tweets():
 @app.route('/api/v2/tweets/<int:id>', methods=['GET'])
 def get_tweet(id):
 	return list_tweet(id)
+
+@app.route('/adduser')
+def adduser():
+	return render_template('adduser.html')
 
 
 if __name__ == "__main__":
