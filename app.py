@@ -229,7 +229,7 @@ def add_tweets():
 	user_tweet['body'] = request.json['body']
 	user_tweet['created_at'] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 	print(user_tweet)
-	return jsonify({'status': add_tweet(user_tweet)}), 200
+	return jsonify({'status': add_tweet(user_tweet)}), 201
 
 
 @app.route('/api/v2/tweets/<int:id>', methods=['GET'])
