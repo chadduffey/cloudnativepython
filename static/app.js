@@ -13,6 +13,15 @@ function UserListViewModel() {
 	self.username = ko.observable();
 	self.email = ko.observable();
 	self.password = ko.observable();
+	
+	$.getJSON('/api/v1/users', function(userModels) {
+		var t = $.map(userModels.user_list, function(item) {
+			return new User(item);
+		});
+		self.user_list(t);
+	});
+
+
 	self.addUser = function() {
 		self.save();
 		self.name("");
@@ -48,9 +57,3 @@ function UserListViewModel() {
 
 ko.applyBindings(new UserListViewModel()); 
 
-$.getJSON('/api/v1/users', function(userModels) {
-	var t = $.map(userModels.user_list, function(item) {
-		return new User(item);
-	});
-	self.user_list(t);
-});
