@@ -103,6 +103,7 @@ def upd_user(user):
 	return "Success"
 
 def list_tweets():
+	print("list_tweets")
 	conn = sqlite3.connect('mydb.db')
 	print("Database opened successfully")
 	api_list=[]
@@ -239,6 +240,10 @@ def get_tweet(id):
 @app.route('/adduser')
 def adduser():
 	return render_template('adduser.html')
+
+@app.route('/addtweets')
+def addtweetjs():
+	render_template('addtweets.html')
 
 
 if __name__ == "__main__":
