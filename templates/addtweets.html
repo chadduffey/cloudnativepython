@@ -13,22 +13,22 @@
 
       <table class="table table-striped">
       	Username: <input data-bind="value: username" placeholder="Username" type="username"></input>
-            </div>
-            <div>
-              body: <textarea data-bind="value: body" placeholder="Content of tweet" type="text"></textarea>
-            </div>
-            <div>
-            </div>
-              <button type="submit">Add Tweet</button>
-          </table>
-    </form>
-    <ul data-bind="foreach: tweets_list, visible: tweets_list().length > 0">
-      <li>
-      	<p data-bind="text: username"></p>
-      	<p data-bind="text: body"></p>
-        <p data-bind="text: timestamp"></p>
-      </li>
-    </ul>
+        </div>
+        <div>
+          body: <textarea data-bind="value: body" placeholder="Content of tweet" type="text"></textarea>
+        </div>
+        <div>
+        </div>
+          <button type="submit">Add Tweet</button>
+      </table>
+      </form>
+        <ul data-bind="foreach: tweets_list, visible: tweets_list().length > 0">
+          <li>
+      	   <p data-bind="text: username"></p>
+      	   <p data-bind="text: body"></p>
+            <p data-bind="text: timestamp"></p>
+          </li>
+        </ul>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.2.0/knockout-min.js"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
