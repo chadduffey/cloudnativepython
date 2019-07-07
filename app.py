@@ -3,6 +3,8 @@ from flask import abort
 from flask_cors import CORS, cross_origin
 from flask import make_response, url_for
 
+from pymongo import MongoClient
+
 import json
 from time import gmtime, strftime
 import sqlite3
@@ -11,6 +13,51 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = '#&*^%$@(*GHere'
 CORS(app)
+
+connection = MongoClient("mongodb://localhost:27017/")
+def create_mongodatabase():
+	try:
+		dbnames = connection.database_names()
+		if 'cloud_native' not in dbnames:
+			db = connection.cloud_native.users
+			db_tweets = connection.cloud_native.tweets
+			db_api = connection.cloud_native.apirelease
+			
+			db.insert({
+				"email": "duff@google.com",
+				"id": 33,
+				"name": "C Duff",
+				"password": "pass",
+				"username": "duff"
+			})
+			
+			db_tweets.insert({
+				"body": "Most interesting things",
+				"id": 18,
+				"timestamp": "2019-07-07T06:39:40Z",
+				"tweetedby": "duff"
+			})
+			
+			db_api.insert( {
+				"buildtime": "2017-01-01 10:00:00",
+				"links": "/api/v1/users",
+				"methods": "get, post, put, delete",
+				"version": "v1"
+			})
+			
+			db_api.insert( {
+				"buildtime": "2017-02-11 10:00:00",
+				"links": "api/v2/tweets",
+				"methods": "get, post",
+				"version": "2017-01-10 10:00:00"
+			})
+
+			print("Database initialized")
+		else:
+			print("Database was already initialized")
+	except:
+		print("Database creation failed")
+
 
 def list_users():
 	conn = sqlite3.connect('mydb.db')
@@ -290,4 +337,5 @@ def invalid_request(error):
 	return make_response(jsonify({'error': 'Bad Request'}), 400)
 
 if __name__ == '__main__':
+	create_mongodatabase()
 	app.run(host='0.0.0.0', port=5000, debug=True)
