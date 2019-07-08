@@ -252,18 +252,10 @@ def addtweetjs():
 
 @app.route("/api/v1/info")
 def home_index():
-	conn = sqlite3.connect('mydb.db')
-	print ("Opened database successfully");
 	api_list=[]
-	cursor = conn.execute("SELECT buildtime, version, methods, links from apirelease")
-	for row in cursor:
-		api = {}
-		api['version'] = row[0]
-		api['buildtime'] = row[1]
-		api['methods'] = row[2]
-		api['links'] = row[3]
-		api_list.append(api)
-	conn.close()
+	db = connection.cloud_native.apirelease
+	for row in db.find():
+		api_list.append(str(row))
 	return jsonify({'api_version': api_list}), 200
 
 @app.route('/api/v1/users', methods=['GET'])
