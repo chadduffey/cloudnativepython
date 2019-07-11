@@ -60,20 +60,10 @@ def create_mongodatabase():
 
 
 def list_users():
-	conn = sqlite3.connect('mydb.db')
-	print ("Opened database successfully");
 	api_list=[]
-	cursor = conn.execute("SELECT username, full_name,  emailid, password, id from users")
-	for row in cursor:
-		a_dict = {}
-		a_dict['username'] = row[0]
-		a_dict['name'] = row[1]
-		a_dict['email'] = row[2]
-		a_dict['password'] = row[3]
-		a_dict['id'] = row[4]
-		api_list.append(a_dict)
-
-	conn.close()
+	db = connection.cloud_native.users
+	for row in db.find():
+		api_list.append(str(row))
 	return jsonify({'user_list': api_list})
 
 def list_user(user_id):
