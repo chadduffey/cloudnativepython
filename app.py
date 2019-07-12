@@ -73,7 +73,7 @@ def list_user(user_id):
 		api_list.append(str(i))
 
 	if api_list == []:
-		abort(404)
+		return abort(404)
 
 	return jsonify({'user_details':api_list})
 
