@@ -173,23 +173,18 @@ def add_tweet(new_tweets):
 	   return "Success"
 
 def upd_user(user):
-	conn = sqlite3.connect('mydb.db')
-	print ("Opened database successfully");
-	cursor=conn.cursor()
-	cursor.execute("SELECT * from users where id=? ",(user['id'],))
-	data = cursor.fetchall()
-	print (data)
-	if len(data) == 0:
-		abort(404)
+	api_list = []
+	print(user)
+	db_user = connection.cloud_native.users
+	users = db_user.find_one({"id":user['id']})
+	for i in users:
+		api_list.append(str(i))
+	if api_list == []:
+		return abort(409)
 	else:
-		key_list=user.keys()
-		for i in key_list:
-			if i != "id":
-				print (user, i)
-				# cursor.execute("UPDATE users set {0}=? where id=? ", (i, user[i], user['id']))
-				cursor.execute("""UPDATE users SET {0} = ? WHERE id = ?""".format(i), (user[i], user['id']))
-				conn.commit()
+		db_user.update({'id':user['id']}, {'$set': user}, upsert=False)
 	return "Success"
+
 
 def sumSessionCounter():
 	try:
