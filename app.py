@@ -5,7 +5,7 @@ from flask import make_response, url_for
 
 from pymongo import MongoClient
 
-import json
+import json, random
 from time import gmtime, strftime
 import sqlite3
 
@@ -101,20 +101,20 @@ def list_tweet(user_id):
 	return jsonify(user)
 
 def add_user(new_user):
-	conn = sqlite3.connect('mydb.db')
-	print ("Opened database successfully");
 	api_list=[]
-	cursor=conn.cursor()
-	cursor.execute("SELECT * from users where username=? or emailid=?",(new_user['username'],new_user['email']))
-	data = cursor.fetchall()
-	if len(data) != 0:
-		abort(409)
+	print(new_user)
+	db = connection.cloud_native.users
+	user = db.find({'$or':[{"username":new_user['username']},
+					{"email": new_user['email']}  ]})
+	for i in user:
+		print(str(i))
+		api_list.append(str(i))
+
+	if api_list == []:
+		db.insert(new_user)
+		return "Success"
 	else:
-	   cursor.execute("insert into users (username, emailid, password, full_name) values(?,?,?,?)",(new_user['username'],new_user['email'], new_user['password'], new_user['name']))
-	   conn.commit()
-	   return "Success"
-	conn.close()
-	return jsonify(a_dict)
+		return abort(409)
 
 
 def del_user(del_user):
@@ -252,7 +252,8 @@ def create_user():
 		'username': request.json['username'],
 		'email': request.json['email'],
 		'name': request.json.get('name',""),
-		'password': request.json['password']
+		'password': request.json['password'],
+		'id': random.randint(1,1000)
 	}
 	return jsonify({'status': add_user(user)}), 201
 
