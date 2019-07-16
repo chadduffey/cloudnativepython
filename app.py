@@ -118,17 +118,14 @@ def add_user(new_user):
 
 
 def del_user(del_user):
-	conn = sqlite3.connect('mydb.db')
-	print ("Opened database successfully");
-	cursor=conn.cursor()
-	cursor.execute("SELECT * from users where username=? ",(del_user,))
-	data = cursor.fetchall()
-	print ("Data" ,data)
-	if len(data) == 0:
-		abort(404)
+	db = connection.cloud_native.users
+	api_list = []
+	for i in db.find({'username':del_user}):
+		api_list.append(str(i))
+	if api_list == []:
+		return abort(404)
 	else:
-	   cursor.execute("delete from users where username==?",(del_user,))
-	   conn.commit()
+	   db.remove({'username':del_user})
 	   return "Success"
 
 def list_tweets():
