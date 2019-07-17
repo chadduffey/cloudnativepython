@@ -118,25 +118,26 @@ def del_user(del_user):
 
 def list_tweets():
 	api_list = []
-	db = connection.cloud_native.tweet
+	db = connection.cloud_native.tweets
 	for row in db.find():
 		api_list.append(str(row))
 	return jsonify({'tweets_list':api_list})
 
 
-def add_tweet(new_tweets):
-	conn = sqlite3.connect('mydb.db')
-	print ("Opened database successfully");
-	cursor=conn.cursor()
-	cursor.execute("SELECT * from users where username=? ",(new_tweets['username'],))
-	data = cursor.fetchall()
-
-	if len(data) == 0:
-		abort(404)
+def add_tweet(new_tweet):
+	api_list = []
+	print(new_tweet)
+	db_user = connection.cloud_native.users
+	db_tweet = connection.cloud_native.tweets
+	user = db_user.find({'username':new_tweet['tweetedby']})
+	for i in user:
+		api_list.append(str(i))
+	if api_list == []:
+		return abort(404)
 	else:
-	   cursor.execute("INSERT into tweets (username, body, tweet_time) values(?,?,?)",(new_tweets['username'],new_tweets['body'], new_tweets['created_at']))
-	   conn.commit()
-	   return "Success"
+		db_tweet.insert(new_tweet)
+		return "Success"
+
 
 def upd_user(user):
 	api_list = []
@@ -246,7 +247,7 @@ def add_tweets():
 	user_tweet = {}
 	if not request.json or not 'username' in request.json or not 'body' in request.json:
 		abort(400)
-	user_tweet['username'] = request.json['username']
+	user_tweet['tweetedby'] = request.json['username']
 	user_tweet['body'] = request.json['body']
 	user_tweet['created_at']=strftime("%Y-%m-%dT%H:%M:%SZ", gmtime())
 	print (user_tweet)
