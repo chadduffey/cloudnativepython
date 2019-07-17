@@ -79,26 +79,14 @@ def list_user(user_id):
 
 
 def list_tweet(user_id):
-	print (user_id)
-	conn = sqlite3.connect('mydb.db')
-	print ("Opened database successfully");
-	api_list=[]
-	cursor=conn.cursor()
-	cursor.execute("SELECT * from tweets  where id=?",(user_id,))
-	data = cursor.fetchall()
-	print (data)
-	if len(data) == 0:
-		abort(404)
-	else:
-
-		user = {}
-		user['id'] = data[0][0]
-		user['username'] = data[0][1]
-		user['body'] = data[0][2]
-		user['tweet_time'] = data[0][3]
-
-	conn.close()
-	return jsonify(user)
+	db = connection.cloud_native.tweets
+	api_list = []
+	tweet = db.find({'id':user_id})
+	for i in tweet:
+		api_list.append(str(i))
+	if api_list == [];
+		return abort(404)
+	return jsonify({'tweet': api_list})
 
 def add_user(new_user):
 	api_list=[]
