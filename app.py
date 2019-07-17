@@ -84,7 +84,7 @@ def list_tweet(user_id):
 	tweet = db.find({'id':user_id})
 	for i in tweet:
 		api_list.append(str(i))
-	if api_list == [];
+	if api_list == []:
 		return abort(404)
 	return jsonify({'tweet': api_list})
 
