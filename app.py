@@ -129,31 +129,12 @@ def del_user(del_user):
 	   return "Success"
 
 def list_tweets():
-	conn = sqlite3.connect('mydb.db')
-	print ("Opened database successfully");
-	api_list=[]
-	cursor=conn.cursor()
-	cursor.execute("SELECT username, body, tweet_time, id from tweets")
-	data = cursor.fetchall()
-	print (data)
-	print (len(data))
-	if len(data) == 0:
-		return api_list
-	else:
-		for row in data:
-			tweets = {}
+	api_list = []
+	db = connection.cloud_native.tweet
+	for row in db.find():
+		api_list.append(str(row))
+	return jsonify({'tweets_list':api_list})
 
-			tweets['tweetedby'] = row[0]
-			tweets['body'] = row[1]
-			tweets['timestamp'] = row[2]
-			tweets['id'] = row[3]
-
-			print (tweets)
-			api_list.append(tweets)
-
-	conn.close()
-	print (api_list)
-	return jsonify({'tweets_list': api_list})
 
 def add_tweet(new_tweets):
 	conn = sqlite3.connect('mydb.db')
