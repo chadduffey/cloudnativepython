@@ -15,6 +15,7 @@ app.secret_key = '#&*^%$@(*GHere'
 CORS(app)
 
 connection = MongoClient("mongodb://localhost:27017/")
+
 def create_mongodatabase():
 	try:
 		dbnames = connection.database_names()
