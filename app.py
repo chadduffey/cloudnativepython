@@ -160,6 +160,9 @@ def sumSessionCounter():
 	except KeyError:
 		session['counter'] = 1
 
+def rev_str(thing):
+    return "".join(reversed(thing))
+
 @app.route('/')
 def main():
 	sumSessionCounter()
@@ -253,6 +256,10 @@ def add_tweets():
 	user_tweet['created_at']=strftime("%Y-%m-%dT%H:%M:%SZ", gmtime())
 	print (user_tweet)
 	return  jsonify({'status': add_tweet(user_tweet)}), 201
+
+@app.route('/api/v2/reverse_string/<string:thing>', methods=['GET'])
+def reverse_string(thing):
+    return jsonify({'backwards': rev_str(thing)})
 
 @app.route('/api/v2/tweets/<int:id>', methods=['GET'])
 def get_tweet(id):
