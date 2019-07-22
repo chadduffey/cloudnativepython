@@ -163,6 +163,9 @@ def sumSessionCounter():
 def rev_str(thing):
     return "".join(reversed(thing))
 
+def is_palindrome(word):
+    return word == "".join(reversed(word))
+
 @app.route('/')
 def main():
 	sumSessionCounter()
@@ -257,13 +260,17 @@ def add_tweets():
 	print (user_tweet)
 	return  jsonify({'status': add_tweet(user_tweet)}), 201
 
+@app.route('/api/v2/tweets/<int:id>', methods=['GET'])
+def get_tweet(id):
+    return list_tweet(id)
+
 @app.route('/api/v2/reverse_string/<string:thing>', methods=['GET'])
 def reverse_string(thing):
     return jsonify({'backwards': rev_str(thing)})
 
-@app.route('/api/v2/tweets/<int:id>', methods=['GET'])
-def get_tweet(id):
-	return list_tweet(id)
+@app.route('/api/v2/palindrome/<string:word>',methods=['GET'])
+def palindrome(word):
+    return jsonify({'is_palindrome': is_palindrome(word)})
 
 @app.errorhandler(404)
 def resource_not_found(error):
