@@ -8,6 +8,7 @@ from pymongo import MongoClient
 import json, random
 from time import gmtime, strftime
 import sqlite3
+import requests
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -166,6 +167,14 @@ def rev_str(thing):
 def is_palindrome(word):
     return word == "".join(reversed(word))
 
+
+def get_catfacts():
+    try:
+        r = requests.get('https://cat-fact.herokuapp.com/facts')
+        print(r.json())
+    except:
+        return "failed to get cat fact"
+
 @app.route('/')
 def main():
 	sumSessionCounter()
@@ -271,6 +280,11 @@ def reverse_string(thing):
 @app.route('/api/v2/palindrome/<string:word>',methods=['GET'])
 def palindrome(word):
     return jsonify({'is_palindrome': is_palindrome(word)})
+
+@app.route('/api/v2/catfacts', methods=['GET'])
+def weather():
+    cf = get_catfacts()
+    return jsonify(cf, 200) 
 
 @app.errorhandler(404)
 def resource_not_found(error):
