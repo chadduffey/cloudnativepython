@@ -175,6 +175,11 @@ def get_catfacts():
     except:
         return "failed to get cat fact"
 
+def get_longest_prefix(words):
+    for word in words:
+        print("*")
+    return "done"
+
 @app.route('/')
 def main():
 	sumSessionCounter()
@@ -284,7 +289,14 @@ def palindrome(word):
 @app.route('/api/v2/catfacts', methods=['GET'])
 def weather():
     cf = get_catfacts()
-    return jsonify(cf, 200) 
+    return jsonify(cf, 200)
+
+@app.route('/api/v2/longestprefix', methods=['POST'])
+def longestprefix():
+    if not request.json or not 'words' in request.json:
+        abort(400)
+    print(request.json['words'])
+    return jsonify({'longest_prefix': get_longest_prefix(request.json['words'])})
 
 @app.errorhandler(404)
 def resource_not_found(error):
