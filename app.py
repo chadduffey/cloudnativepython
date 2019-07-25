@@ -176,9 +176,18 @@ def get_catfacts():
         return "failed to get cat fact"
 
 def get_longest_prefix(words):
-    for word in words:
-        print("*")
-    return "done"
+    print(words)
+    longest = ""
+    if not words:
+        return longest
+    shortest_string = min(words, key=len)
+    print(shortest_string)
+    for i in range(len(shortest_string)):
+        if all([x.startswith(shortest_string[:i+1]) for x in words]):
+            longest = shortest_string[:i+1]
+        else:
+            break
+    return longest
 
 @app.route('/')
 def main():
