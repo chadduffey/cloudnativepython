@@ -189,6 +189,17 @@ def get_longest_prefix(words):
             break
     return longest
 
+def convert_roman(roman):
+    values = {'I':1, 'V' : 5, 'X' : 10, 'L' : 50, 'C' : 100, 'D' : 500, 'M': 1000}
+    int_val = 0
+    for i in range(len(roman)):
+        if i > 0 and values[roman[i]] > values[roman[i - 1]]:
+            int_val += values[roman[[i]]] - 2 * values[roman[i - 1]]
+        else:
+            int_val += values[roman[i]]
+    return int_val
+
+
 @app.route('/')
 def main():
 	sumSessionCounter()
@@ -306,6 +317,10 @@ def longestprefix():
         abort(400)
     print(request.json['words'])
     return jsonify({'longest_prefix': get_longest_prefix(request.json['words'])})
+
+@app.route('/api/v2/roman/<string:roman>', methods=['GET'])
+def get_roman(roman):
+    return jsonify({'number': convert_roman(roman)})
 
 @app.errorhandler(404)
 def resource_not_found(error):
